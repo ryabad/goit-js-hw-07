@@ -17,27 +17,27 @@ gallery.addEventListener("click", clickHandle);
 function clickHandle(event) {
   event.preventDefault();
 
-  if (event.target === event.currentTarget) {
+  if (event.target.nodeName !== "IMG") {
     return;
   }
 
   const imageLink = event.target.dataset.source;
 
-  const instance = basicLightbox.create(`
+  const instance = basicLightbox.create(
+    `
       <img src="${imageLink}"/>
-    `);
+    `,
+    {
+      onShow: (instance) => window.addEventListener("keydown", buttonClose),
+      onClose: (instance) => window.removeEventListener("keydown", buttonClose),
+    }
+  );
 
   instance.show();
 
-  document.addEventListener("keydown", buttonClose);
-
   function buttonClose(event) {
-    if (!event.target.classList.value === "gallery__link") {
-      return;
-    }
     if (event.key === "Escape") {
       instance.close();
-      document.removeEventListener("keydown", buttonClose);
     }
   }
 }
